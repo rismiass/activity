@@ -1,13 +1,17 @@
 package com.example.dessertclicker;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ShareCompat;
 import androidx.databinding.DataBindingUtil;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -28,10 +32,12 @@ class Dessert {
     }
 }
 
+@RequiresApi(api = Build.VERSION_CODES.R)
 public class MainActivity extends AppCompatActivity {
     private int revenue = 0;
     private int dessertsSold = 0;
     private ActivityMainBinding binding;
+    public String name = "MainGH";
 
     private List<Dessert> allDesserts = List.of(
         new Dessert(R.drawable.cupcake, 5, 0),
@@ -52,9 +58,62 @@ public class MainActivity extends AppCompatActivity {
     private Dessert currentDessert = allDesserts.get(0);
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(name, "start!");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(name, "stop!");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d(name, "restart!");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(name, "destroy");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(name, "pause");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(name, "resume");
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("revenue", revenue);
+        outState.putInt("dessertsSold", dessertsSold);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            revenue = savedInstanceState.getInt("revenue");
+            dessertsSold = savedInstanceState.getInt("dessertsSold");
+        }
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
 
         binding.dessertButton.setOnClickListener((v) -> {
             onDessertClicked();
@@ -110,10 +169,11 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.shareMenuButton: onShare(); break;
+        if (item.getItemId() == R.id.shareMenuButton) {
+            onShare();
         }
         return super.onOptionsItemSelected(item);
     }
