@@ -1,10 +1,16 @@
 package com.example.dessertclicker;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ShareCompat;
 import androidx.databinding.DataBindingUtil;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.dessertclicker.databinding.ActivityMainBinding;
 
@@ -83,5 +89,32 @@ public class MainActivity extends AppCompatActivity {
             currentDessert = newDessert;
             binding.dessertButton.setImageResource(newDessert.imageId);
         }
+    }
+
+    private void onShare() {
+        Intent shareIntent = ShareCompat.IntentBuilder.from(this)
+                .setText(getString(R.string.share_text, dessertsSold, revenue))
+                .setType("text/plain")
+                .getIntent();
+
+        try {
+            startActivity(shareIntent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, getString(R.string.sharing_not_available), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.shareMenuButton: onShare(); break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
